@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>数据查询</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+  <link href="css/bootstrap-table.css" rel="stylesheet" type="text/css" />
+    <script src="jquery.js"></script>
+</head>
+<body style="background: #eef2fc;">
+    <link rel="stylesheet" href="style.css" type="text/css" />
+    <nav class="navbar navbar-inverse" role="navigation">
+            <div class="container-fluid">
+            <div class="navbar-header">
+                    <a class="navbar-brand" href="main.html" style="margin-left: 10px">首页</a>
+                <a class="navbar-brand" href="select.html" style="margin-left: 10px">学生干部数据管理</a>
+                <a class="navbar-brand" href="add.html" style="margin-left: 10px">新增学生干部</a>
+            </div>
+        </nav>
+<h3 style="margin-left: 20px">查询条件：(不输入条件直接查询可查询全部)</h3>
+<div id="form" style="text-align:center;margin-top: 20px"> 
+<table class="table table-bordered " style="">
+    <tbody>
+<tr>
+<td style="text-align:center; ">
+   姓名：<input style="height: 30px;margin-top: 5px" id="application" type='text' placeholder="请输入" size=15px> 
+</td>
+<td style="text-align:center; ">
+   职务：<input  style="height: 30px;margin-top: 5px" id="tag" type='text' placeholder="请输入" size=15px> 
+</td>
+<td style="text-align:center;">
+    班级：<input  style="height: 30px;margin-top: 5px" id="timestamp" type='text' placeholder="请输入" size=15px> 
+</td>
+
+<td>
+<button  type="button" id="btn" style="margin-left:15px;margin-top: 10px "  class="button_style">查询</button>
+</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+
+<hr style="margin-top:20px;background: #3694f9;height: 0px;border: none;" />
+<p > <table id="table" style="margin: 0 auto">
+    </table></p>
+<script src="bootstrap.min.js"></script>
+<script src="bootstrap-table.js"></script>
+<script src="bootstrap-table-zh-CN.min.js"></script>
+<script>
+    $(function(){
+        $.ajax({
+                url: "http://127.0.0.1:3500/token",
+                type:"post",
+                dataType: "JSON",
+                data:JSON.stringify({token:localStorage.getItem('token')}),
+                contentType:'application/json',    
+                error:function(res){
+                    console.log('error');
+               
+                }  ,
+                success:function(res){
+        $.ajax({
+             url: "http://127.0.0.1:3500/find2",
+             type:"POST",
+             data: '{"application":"","tag":"","timestamp":""}',
+             dataType: "JSON",
+             contentType:'application/json',    
+                     // 这里把表单里面的数据放在这里传到后台
+             error:function(res){
+                 console.log(res.data);
+                 alert("error")
+             }  ,
+             success:function(res){
+                {
+                    console.log(res.data);
+                    $("#table").bootstrapTable('destroy'); 
+                    $('#table').bootstrapTable({
+                    data:res,
+                    striped: true,
+                    singleSelect: false,
+                    dataType: "json",
+                    pagination: true, //分页
+                    pageSize: 10,
+                    pageNumber: 1,
+                    search: false, //显示搜索框
+                    contentType: JSON,
+                    queryParams: null,
+                    columns: [
+                    {
+                            title: "编号",
+                            field: 'id',
+                            align: 'center',
+                            valign: 'middle'
+                        },
+                     {
+                            title: "姓名",
+                            field: 'application',
+                            align: 'center',
+                            valign: 'middle'
+                        }, 
+                    {
+                            title: '职务',
+                            field: 'tag',
+                            align: 'center',
+                            valign: 'middle'
+                        },
+
+                        {
+                            title: "班级",
+                            field: 'timestamp',
+                            align: 'center',
+                            valign: 'middle'
+                        },
+                        {
+                     field: 'operation',
+                     title: '操作',
+                     align: 'center',
+                     valign: 'middle',
+                     events: operateEvents,
+                    formatter: addFunctionAlty
+                 }
+
+                 ]
+                 
+             }); 
+                 
+             function addFunctionAlty(value, row, index) {
+    return [
+        '<button id="btn_edit" class="btn btn-warning" >修改</button>  ',
+        '<button id="btn_delete" class="btn btn-warning">删除</button>'
+    ].join('');
+}             
+                }
+             }
+         })
+        }
+        })
+    })
+window.operateEvents = {
+ 
+ // 点击修改按钮执行的方法
+ 'click #btn_edit': function (e, value, row, index) {
+    window.location.replace('update.html?id='+row.id+'&application='+row.application+'&tag='+row.tag+'&timestamp='+row.timestamp)
+    var temp=JSON.stringify({
+
+})
+ console.log(temp)       
+
+             },
+  
+ 
+
+ // 点击删除按钮执行的方法
+ 'click #btn_delete': function (e, value, row, index) {
+     console.log(row.systemId)
+     $.ajax({
+                url: "http://127.0.0.1:3500/token",
+                type:"post",
+                dataType: "JSON",
+                data:JSON.stringify({token:localStorage.getItem('token')}),
+                contentType:'application/json',    
+                error:function(res){
+                    console.log('error');
+               
+                }  ,
+                success:function(res){
+    $.ajax({
+             url: "http://127.0.0.1:3500/delete/"+row.id,
+             type:"DELETE",
+             dataType: "JSON",
+             contentType:'application/json',
+             error:function(res){
+                alert("删除失败！")
+               
+             }  ,
+             success:function(res){
+                 alert("删除成功！")    
+  
+         $.ajax({
+             url: "http://127.0.0.1:3500/find2",
+             type:"POST",
+             data: '{"application":"","tag":"","timestamp":""}',
+             dataType: "JSON",
+             contentType:'application/json',    
+                     // 这里把表单里面的数据放在这里传到后台
+             error:function(res){
+                 console.log(res.data);
+                 alert("error")
+             }  ,
+             success:function(res){
+                {
+                    console.log(res.data);
+                    $("#table").bootstrapTable('destroy'); 
+                    $('#table').bootstrapTable({
+                    data:res,
+                    striped: true,
+                    singleSelect: false,
+                    dataType: "json",
+                    pagination: true, //分页
+                    pageSize: 10,
+                    pageNumber: 1,
+                    search: false, //显示搜索框
+                    contentType: JSON,
+                    queryParams: null,
+                    columns: [
+                    {
+                            title: "编号",
+                            field: 'id',
+                            align: 'center',
+                            valign: 'middle'
+                        },
+                     {
+                            title: "姓名",
+                            field: 'application',
+                            align: 'center',
+                            valign: 'middle'
+                        }, 
+                    {
+                            title: '职务',
+                            field: 'tag',
+                            align: 'center',
+                            valign: 'middle'
+                        },
+
+                        {
+                            title: "班级",
+                            field: 'timestamp',
+                            align: 'center',
+                            valign: 'middle'
+                        },
+                        {
+                     field: 'operation',
+                     title: '操作',
+                     align: 'center',
+                     valign: 'middle',
+                     events: operateEvents,
+                    formatter: addFunctionAlty
+                 }
+
+                 ]
+                 
+             }); 
+                 
+             function addFunctionAlty(value, row, index) {
+    return [
+        '<button id="btn_edit" class="btn btn-warning" >修改</button>  ',
+        '<button id="btn_delete" class="btn btn-warning">删除</button>'
+    ].join('');
+}             
+                }
+             }
+         })
+
+             }
+    })
+                }
+            })
+ }
+ }
+$("#btn").click(function(){
+    console.log('hi')
+    var temp = JSON.stringify({
+        application:$("#application").val(),
+        tag:$("#tag").val(),
+        timestamp:$("#timestamp").val(),
+        });
+        console.log(temp)
+        $.ajax({
+                url: "http://127.0.0.1:3500/token",
+                type:"post",
+                dataType: "JSON",
+                data:JSON.stringify({token:localStorage.getItem('token')}),
+                contentType:'application/json',    
+                error:function(res){
+                    console.log('error');
+               
+                }  ,
+                success:function(res){
+              $.ajax({
+                     url: "http://127.0.0.1:3500/find2",
+                     type:"post",
+                     data:temp,
+                     dataType: "JSON",
+                     contentType:'application/json',    
+                     error:function(res){
+                         console.log('error');
+                     }  ,
+                     success:function(res){
+            {
+                    console.log(res.data);
+                    $("#table").bootstrapTable('destroy'); 
+                    $('#table').bootstrapTable({
+                    data:res,
+                    striped: true,
+                    singleSelect: false,
+                    dataType: "json",
+                    pagination: true, //分页
+                    pageSize: 10,
+                    pageNumber: 1,
+                    search: false, //显示搜索框
+                    contentType: JSON,
+                    queryParams: null,
+                    columns: [
+                    {
+                            title: "编号",
+                            field: 'id',
+                            align: 'center',
+                            valign: 'middle'
+                        },
+                       						 {
+                            title: "姓名",
+                            field: 'application',
+                            align: 'center',
+                            valign: 'middle'
+                        }, 
+                    {
+                            title: '职务',
+                            field: 'tag',
+                            align: 'center'
+                        },
+
+                        {
+                            title: "班级",
+                            field: 'timestamp',
+                            align: 'center',
+                            valign: 'middle'
+                        },
+                        {
+                     field: 'operation',
+                     title: '操作',
+                     align: 'center',
+                     valign: 'middle',
+                     events: operateEvents,
+                    formatter: addFunctionAlty
+                 }
+
+                 ]
+                 
+             }); 
+                 
+             function addFunctionAlty(value, row, index) {
+    return [
+        '<button id="btn_edit" class="btn btn-warning" >修改</button>  ',
+        '<button id="btn_delete" class="btn btn-warning">删除</button>'
+    ].join('');
+}             
+                }
+                     }
+                 })
+                }
+            })
+                 return false;
+                });
+     </script>
+</body>
+</html>  

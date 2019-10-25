@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/bootstrap-table.css" rel="stylesheet">
+</head>
+<body style="background: #cdcdcd;">
+        <nav class="navbar navbar-inverse" role="navigation">
+                <div class="container-fluid">
+                <div class="navbar-header">
+                        <a class="navbar-brand" href="main.html" style="margin-left: 10px">首页</a>
+                    <a class="navbar-brand" href="select.html" style="margin-left: 10px">学生干部数据管理</a>
+                    <a class="navbar-brand" href="add.html" style="margin-left: 10px">新增学生干部</a>
+                </div>
+            </nav>
+
+            <img src="input.jpg" style=" top: 50%;z-index: -10;
+left: 50%;
+transform: translate(-50%, -50%); position:fixed;"/>
+<div style="top: 50%;left: 50%;transform: translate(-50%, -50%); position:fixed;" >
+        <h3 style="color:#000;z-index:-5;text-align: center;margin-bottom: 50px">修改学生干部</h3>  
+        姓名：<input name="name" id='name' style="width:90px;margin:5px;text-align: center";/>
+         <br>
+         职务：<input name="zw" style="width:90px;margin:5px;text-align: center" id='zw'/>
+         <br>
+         班级：<input name="class" id="class" style="width:90px;margin:5px;text-align: center"/>
+         <button id="button"style="display:block;margin:0 auto;margin-top:30px;" name="">确定修改</button>
+        </div>
+        </body>
+<script src="jquery.js"></script>
+<script src="bootstrap.min.js"></script>
+<script>
+     $(function() {
+ var loc = location.href;//获取整个跳转地址内容，其实就是你传过来的整个地址字符串
+ console.log("我的地址"+loc);
+ var n1 = loc.length;//地址的总长
+ var n2 = loc.indexOf("?");//取得=号的位置
+ var parameter = decodeURI(loc.substr(n2+1, n1-n2));//截取从?号后面的内容,也就是参数列表，因为传过来的路径是加了码的，所以要解码
+ var parameters  = parameter.split("&");//从&处拆分，返回字符串数组
+ console.log("参数列表"+parameters);
+ var paValue = new Array();//创建一个用于保存具体值得数组
+ for (var i = 0; i < parameters.length; i++) {
+     console.log("参数键值对值"+i+":"+parameters[i]);
+     var m1 = parameters[i].length;//获得每个键值对的长度
+     var m2 = parameters[i].indexOf("=");//获得每个键值对=号的位置
+     var value = parameters[i].substr(m2+1, m1-m2);//获取每个键值对=号后面具体的值
+     paValue[i] = value;
+ }
+             $("#name").val(paValue[1]);
+             $("#zw").val(paValue[2]);
+            $("#class").val(paValue[3]);
+    $("#button").click(function () {
+        var temp = JSON.stringify({
+                id: paValue[0],
+                application:$("#name").val(),
+                tag:$("#zw").val(),
+                timestamp: $("#class").val(),
+            })
+          console.log(temp)
+          $.ajax({
+                url: "http://127.0.0.1:3500/token",
+                type:"post",
+                dataType: "JSON",
+                data:JSON.stringify({token:localStorage.getItem('token')}),
+                contentType:'application/json',    
+                error:function(res){
+                    console.log('error');
+               
+                }  ,
+                success:function(res){
+        $.ajax({
+            url: "http://127.0.0.1:3500/update",
+            type: "post",
+            dataType: "JSON",
+            contentType:'application/json', 
+            data:temp,
+            success: function (response) {
+                alert('修改成功！');
+                setTimeout(() => {
+                    window.location.replace("select.html")
+                }, 300);
+            },
+            error: function () {
+                alert('修改失败！');
+
+            }
+        });
+    }
+})
+    });
+})
+
+
+</script>
+</html>

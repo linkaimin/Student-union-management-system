@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="css/bootstrap-table.css" rel="stylesheet" type="text/css" />
+
+</head>
+<body style="background: #cdcdcd;">
+
+    
+        <nav class="navbar navbar-inverse" role="navigation">
+                <div class="container-fluid">
+                <div class="navbar-header">
+                        <a class="navbar-brand" href="main.html" style="margin-left: 10px">首页</a>
+                    <a class="navbar-brand" href="select.html" style="margin-left: 10px">学生干部数据管理</a>
+                    <a class="navbar-brand" href="add.html" style="margin-left: 10px">新增学生干部</a>
+                </div>
+            </nav>
+
+<img src="input.jpg" style=" top: 50%;z-index: -10;
+left: 50%;
+transform: translate(-50%, -50%); position:fixed;"/>
+<div style="top: 50%;left: 50%;transform: translate(-50%, -50%); position:fixed;" >
+        <h3 style="color:#000;z-index:-5;text-align: center;margin-bottom: 50px">增加学生干部</h3>  
+    姓名：<input name="name" id='name' style="width:90px;margin:5px;text-align: center";/>
+         <br>
+         职务：<input name="zw" style="width:90px;margin:5px;text-align: center" id='zw'/>
+         <br>
+         班级：<input name="class" id="class" style="width:90px;margin:5px;text-align: center"/>
+         <button id="button"style="display:block;margin:0 auto;margin-top:30px;" name="">确定</button>
+        </div>
+        </body>
+<script src="jquery.js"></script>
+<script src="bootstrap.min.js"></script>
+<script>
+   
+    $("#button").click(function () {
+        var temp = JSON.stringify({
+                application:$("#name").val(),
+                tag:$("#zw").val(),
+                timestamp: $("#class").val(),
+            })
+          console.log(temp)
+          $.ajax({
+            url: "http://127.0.0.1:3500/token",
+                type:"post",
+                dataType: "JSON",
+                data:JSON.stringify({token:localStorage.getItem('token')}),
+                contentType:'application/json',    
+                error:function(res){
+                    console.log('error');
+               
+                }  ,
+                success:function(res){
+        $.ajax({
+            url: "http://127.0.0.1:3500/add",
+            type: "post",
+            dataType: "JSON",
+            contentType:'application/json', 
+            data:temp,
+            success: function (response) {
+                alert('增加成功！');
+                setTimeout(() => {
+                    window.location.replace("select.html")
+                }, 300);
+            },
+            error: function () {
+                alert('增加失败！');
+
+            }
+        });
+    }
+})
+    });
+
+
+
+</script>
+</html>
