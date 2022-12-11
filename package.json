@@ -165,7 +165,7 @@
       "resolved": "https://registry.npmjs.org/etag/-/etag-1.8.1.tgz",
       "version": "1.8.1"
     },
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "express-art-template": "^1.0.1",
     "fast-levenshtein": {
       "integrity": "sha1-PYpcZog6FqMMqGQ+hR8Zuqd5eRc=",
