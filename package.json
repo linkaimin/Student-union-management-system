@@ -264,7 +264,7 @@
       "resolved": "https://registry.npmjs.org/js-tokens/-/js-tokens-3.0.2.tgz",
       "version": "3.0.2"
     },
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.0",
     "levn": {
       "integrity": "sha1-OwmSTt+fCDwEkP3UwLxEIeBHZO4=",
       "requires": {
